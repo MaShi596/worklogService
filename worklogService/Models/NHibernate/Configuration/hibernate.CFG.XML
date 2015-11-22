@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+  <session-factory>
+    
+    <property name="connection.provider">
+      NHibernate.Connection.DriverConnectionProvider
+    </property>
+    
+    
+    <property name="dialect">NHibernate.Dialect.MsSql2008Dialect</property>
+    
+    
+    <property name="connection.driver_class">
+      NHibernate.Driver.SqlClientDriver
+    </property>
+    
+    <property name="connection.connection_string"> 
+      <!--保持位于属性的第3个属性位置（0开始）-->
+      <!--Data Source=115.24.161.31;Initial Catalog=Company;Integrated Security=SSPI-->
+      UID=sa;PWD=iti@240;Database=itilabtest;server=115.24.161.31
+    </property>
+    
+    <property name="show_sql">false</property>
+  
+  </session-factory>
+</hibernate-configuration>
