@@ -6,8 +6,10 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http;
+using worklogService.CommonMethod;
 using worklogService.DBoperate;
 using worklogService.Models;
+using worklogService.Models.CommunicationClass;
 namespace worklogService.Controllers
 {
     public class UsersController : ApiController
@@ -34,6 +36,97 @@ namespace worklogService.Controllers
             //return new string[] { "value1", "value2" };
         }
 
+        public class DeptsandPerson
+        {
+            Dept dept;
+
+            public Dept Dept
+            {
+                get { return dept; }
+                set { dept = value; }
+            }
+            
+            List<PersonInfo> persons;
+
+            public List<PersonInfo> Persons
+            {
+                get { return persons; }
+                set { persons = value; }
+            }
+            
+        }
+
+        public class DeptsandPersonlist
+        {
+            List<DeptsandPerson> list;
+
+            public List<DeptsandPerson> List
+            {
+                get { return list; }
+                set { list = value; }
+            }
+
+        
+        }
+
+        public HttpResponseMessage GetAlldeptAndusers()
+        {
+             BaseService baseservice = new BaseService();
+             IList nhbdepts = baseservice.loadEntityList("select u from WkTDept u");
+             IList nhbpersons = baseservice.loadEntityList("select u from WkTUser u ");
+             List<DeptsandPerson> dplist = new List<DeptsandPerson>();
+             
+             foreach (WkTDept o in nhbdepts)
+             {
+                 DeptsandPerson dp = new DeptsandPerson();
+                 
+                 Dept d = new Dept();
+
+                 d.Id = o.Id.ToString();
+                 d.DeptName = o.KdName.Trim();
+                 dp.Dept = d;
+                 List<PersonInfo> pers = new List<PersonInfo>();
+
+                 foreach (WkTUser n in nhbpersons)
+                 {
+                     if (n.Kdid.Id == o.Id)
+                     {
+                         PersonInfo per = new PersonInfo();
+                         per.Id = n.Id.ToString();
+                         per.PersonName = n.KuName;
+                         pers.Add(per);
+                     
+                     }
+                     
+                 }
+                 dp.Persons = pers;
+
+                 dplist.Add(dp);
+                 
+             }
+             DeptsandPersonlist l = new DeptsandPersonlist();
+
+             l.List = dplist;
+
+           
+
+             
+             
+             string res = "成功";
+             string data = JsonTools.ObjectToJson(l);
+             
+            var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + " \"data\":" + data + "}";
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+            };
+            return result;
+
+
+        }
+
+        
+        
 
         public class namepwd
         {
@@ -49,7 +142,7 @@ namespace worklogService.Controllers
 
 
             string res;
-           
+            string data = "1";
 
 
             string name = nn.Name; string orpwd = nn.Pwd; 
@@ -74,22 +167,39 @@ namespace worklogService.Controllers
             }
             else
             {
-                //WkTUser u = (WkTUser)userList[0];
-                //foreach (WkTRole r in u.UserRole)
-                //{
-                //    if (r.KrDESC.Trim().Equals("工作小秘书角色"))//是本系统的用户角色
-                //    {
-                //        role = r;
-                //    }
-                //}
-                //this.User = (WkTUser)userList[0];
-                //IniReadAndWrite.IniWriteValue("temp", "myid", User.Id.ToString());
 
-                res =  "登录成功！";
+                Role role = new Role();
+                WkTUser u = (WkTUser)userList[0];
+                foreach (WkTRole r in u.UserRole)
+                {
+                    if (r.KrDESC.Trim().Equals("工作小秘书角色"))//是本系统的用户角色
+                    {
+                        role.RoleOrder = r.KrOrder.ToString();
+                        role.RoleName = r.KrName;
+                    }
+                }
+               
+
+                Dept d = new Dept();
+                d.Id = u.Kdid.Id.ToString();
+                d.DeptName = u.Kdid.KdName.Trim();
+
+                PersonInfo per = new PersonInfo();
+                per.Id = u.Id.ToString();
+                per.PersonName = u.KuName;
+                per.PersonPhone = u.KuPhone;
+                per.PersonDept = d;
+                per.PersonRole = role;
+                per.PersonAccount = u.KuLid;
+
+                
+                data =  JsonTools.ObjectToJson(per);
+                
+                res =  "登录成功";
             }
 
 
-            var jsonStr = "{\"Message\":" + res + "}";//,\"Data\":\"www.itdos.com\"}";
+            var jsonStr = "{\"Message\":" + "\""+res+"\"" + ","+" \"data\":"+ data+"}";
             var result = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
