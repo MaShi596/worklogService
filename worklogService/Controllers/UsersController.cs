@@ -15,7 +15,89 @@ namespace worklogService.Controllers
     public class UsersController : ApiController
     {
 
+        public HttpResponseMessage GetsignExitInfo(int id)
+        {
 
+
+            string res = "";
+            string timetxt = "";
+            BaseService baseService = new BaseService();
+            DateTime today;
+
+            today = DateTime.Now;
+            WkTUser user = new WkTUser();
+            user = (WkTUser)baseService.loadEntity(user, id);
+
+
+            if (CNDate.isworkDay(today.Date.Ticks))
+            {
+                IList attendanceList = baseService.loadEntityList("from Attendance where STATE=" + (int)IEntity.stateEnum.Normal + " and User=" + user.Id + " and SignDate=" + today.Date.Ticks);
+                if (attendanceList != null && attendanceList.Count == 1)
+                {
+                    Attendance todaySignStart = (Attendance)attendanceList[0];
+                    IList usuallyDayList = baseService.loadEntityList("from UsuallyDay where STATE=" + (int)IEntity.stateEnum.Normal + " and StartTime<=" + today.Date.Ticks + " order by StartTime desc");
+                    if (usuallyDayList != null && usuallyDayList.Count == 1)
+                    {
+                        UsuallyDay u = (UsuallyDay)usuallyDayList[0];
+
+                        if (u.WorkTimeEnd <= today.TimeOfDay.Ticks)//未早退
+                        {
+                            if (todaySignStart.LateOrLeaveEarly == (int)Attendance.lateOrLeaveEarlyEnum.LateAndEarly)  //登陆为LateAndEarly表示迟到
+                            {
+                                todaySignStart.LateOrLeaveEarly = (int)Attendance.lateOrLeaveEarlyEnum.Late; // 只是迟到
+                            }
+                            else
+                            {
+                                todaySignStart.LateOrLeaveEarly = (int)Attendance.lateOrLeaveEarlyEnum.Normal;  //  正常签到
+                            }
+                        }
+
+
+                        else //早退
+                        {
+                            if (todaySignStart.LateOrLeaveEarly == (int)Attendance.lateOrLeaveEarlyEnum.LateAndEarly)
+                            {
+                                todaySignStart.LateOrLeaveEarly = (int)Attendance.lateOrLeaveEarlyEnum.LateAndEarly; //迟到并且早退
+                            }
+                            else
+                            {
+                                todaySignStart.LateOrLeaveEarly = (int)Attendance.lateOrLeaveEarlyEnum.Early; //只是早退
+                            }
+                        }
+
+                    }
+                    todaySignStart.SignEndTime = today.TimeOfDay.Ticks;
+                    todaySignStart.SignDate = today.Date.Ticks;
+                    todaySignStart.SignDay = today.Day;
+                    todaySignStart.SignMonth = today.Month;
+                    todaySignStart.SignYear = today.Year;
+                    todaySignStart.State = (int)IEntity.stateEnum.Normal;
+                    todaySignStart.TimeStamp = DateTime.Now.Ticks;
+                    todaySignStart.User = user;
+                    try
+                    {
+                        baseService.SaveOrUpdateEntity(todaySignStart);
+                        res = "签退成功";
+                    }
+                    catch
+                    {
+                        res = "签退失败";
+
+                    }
+                    timetxt = CNDate.getTimeByTimeTicks(todaySignStart.SignStartTime) + "-" + CNDate.getTimeByTimeTicks(today.TimeOfDay.Ticks);
+                }
+            }
+
+
+
+
+            var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + " \"data\":\"" + timetxt + "\"}";
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+            };
+            return result;
+        }
 
 
 
