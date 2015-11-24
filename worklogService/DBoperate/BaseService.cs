@@ -185,26 +185,34 @@ namespace worklogService.DBoperate
         }
 
 
-        //public BaseEntity loadEntity(BaseEntity entity, long id)
-        //{
-        //    if (id == 0)
-        //    {
-        //        return null;
-        //    }
-        //    try
-        //    {
-        //        ISessionFactory factory =Connection.getConfiguration().BuildSessionFactory();
-        //        ISession session = factory.OpenSession();
-        //        ITransaction transaction = session.BeginTransaction();
-        //        session.Load(entity, id);
-        //        session.Close();
-        //        return entity;
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //}
+        public BaseEntity loadEntity(BaseEntity entity, long id)
+        {
+            if (id == 0)
+            {
+                return null;
+            }
+            try
+            {
+
+                ISession session = null;
+                //ISessionFactory factory = null;
+
+                //if (factory == null)
+
+
+                session = OpenSession();//factory.OpenSession();
+
+
+                ITransaction transaction = session.BeginTransaction();
+                session.Load(entity, id);
+                session.Close();
+                return entity;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
 
         ///// <summary>

@@ -169,6 +169,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="CommonMethod\CNDate.cs" />
     <Compile Include="CommonMethod\JsonTools.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
@@ -177,13 +178,18 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Attendance.cs" />
     <Compile Include="Models\BaseEntity.cs" />
     <Compile Include="Models\CommunicationClass\Dept.cs" />
     <Compile Include="Models\CommunicationClass\PersonInfo.cs" />
     <Compile Include="Models\CommunicationClass\Role.cs" />
+    <Compile Include="Models\Holiday.cs" />
+    <Compile Include="Models\IEntity.cs" />
+    <Compile Include="Models\UsuallyDay.cs" />
     <Compile Include="Models\WkTDept.cs" />
     <Compile Include="Models\WkTRole.cs" />
     <Compile Include="Models\WkTUser.cs" />
+    <Compile Include="Models\WorkDay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +271,10 @@
     <Content Include="Models\NHibernate\Configuration\hibernate.CFG.XML">
       <SubType>Designer</SubType>
     </Content>
+    <EmbeddedResource Include="Models\NHibernate\Mappings\UsuallyDay.hbm.xml" />
+    <EmbeddedResource Include="Models\NHibernate\Mappings\Attendance.hbm.xml" />
+    <EmbeddedResource Include="Models\NHibernate\Mappings\Holiday.hbm.xml" />
+    <EmbeddedResource Include="Models\NHibernate\Mappings\WorkDay.hbm.xml" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

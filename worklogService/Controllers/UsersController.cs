@@ -14,6 +14,108 @@ namespace worklogService.Controllers
 {
     public class UsersController : ApiController
     {
+
+
+
+
+
+        public HttpResponseMessage GetAttenceInfo(int id)
+        {
+
+
+            BaseService baseService = new BaseService ();
+            string res = "";
+
+            string timetxt = "" ;
+
+            WkTUser user = new WkTUser ()  ;
+            user = (WkTUser)baseService.loadEntity(user, id);
+                   DateTime today;
+                   
+                   today = DateTime.Now;
+                   
+ 
+
+                    
+                    if (CNDate.isworkDay(today.Date.Ticks))//工作日登录
+                    {
+                        //查询最近的工作起始时间安排
+                        IList attendanceList = baseService.loadEntityList("from Attendance where STATE=" + (int)IEntity.stateEnum.Normal + " and User=" + user.Id + " and SignDate=" + today.Date.Ticks);
+
+                        if (attendanceList != null && attendanceList.Count == 1)//今天登录过
+                        {
+                            res = "今天登录过";
+                            Attendance atd = (Attendance)attendanceList[0];
+                            timetxt += atd.SignStartTime != 0 ? CNDate.getTimeByTimeTicks(atd.SignStartTime) : "";
+                            timetxt += "-";
+                            timetxt += atd.SignEndTime != 0 ? CNDate.getTimeByTimeTicks(atd.SignEndTime) : "未签退";
+                        }
+
+
+                        else // 今天没有登陆过
+                        {
+                            Attendance todaySignStart = new Attendance();//用于记录考勤信息
+                            IList usuallyDayList = baseService.loadEntityList("from UsuallyDay where STATE="
+                                + (int)IEntity.stateEnum.Normal + " and StartTime<=" + today.Date.Ticks +
+                                " order by StartTime desc"); //查询作息时间
+                            if (usuallyDayList != null && usuallyDayList.Count == 1) //存在作息时间设置
+                            {
+                                UsuallyDay u = (UsuallyDay)usuallyDayList[0];
+                                if (u.WorkTimeStart >= today.TimeOfDay.Ticks)
+                                {
+                                    todaySignStart.LateOrLeaveEarly = (int)Attendance.lateOrLeaveEarlyEnum.Early; // 正常签到
+                                }
+                                else
+                                {
+                                    todaySignStart.LateOrLeaveEarly = (int)Attendance.lateOrLeaveEarlyEnum.LateAndEarly; // 迟到
+                                }
+                            }
+                            todaySignStart.SignStartTime = today.TimeOfDay.Ticks;
+                            todaySignStart.SignDate = today.Date.Ticks;
+                            todaySignStart.SignDay = today.Day;
+                            todaySignStart.SignMonth = today.Month;
+                            todaySignStart.SignYear = today.Year;
+                            todaySignStart.State = (int)IEntity.stateEnum.Normal;
+                            
+                                todaySignStart.TimeStamp = DateTime.Now.Ticks;
+                            
+                            todaySignStart.User = user;
+                            try
+                            {
+                                baseService.SaveOrUpdateEntity(todaySignStart);
+                                res = "签到成功";
+                            }
+                            catch
+                            {
+                                res = "签到失败";
+                                
+                            }
+                            timetxt = CNDate.getTimeByTimeTicks(todaySignStart.SignStartTime) + "-"+"未签退";
+                        }
+                    }
+                    else
+                    {
+                        timetxt = "今天是休息日";
+
+                        //this.attendance_label.Text = "今天是休息日";
+
+                    }
+                   
+        
+       
+            //string data = JsonTools.ObjectToJson(l);
+
+                    var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + " \"data\":\"" + timetxt + "\"}";
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+            };
+            return result;
+        }
+
+
+
+
         // GET api/users
         public IEnumerable<string> Get()
         {
