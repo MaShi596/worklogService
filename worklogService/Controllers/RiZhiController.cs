@@ -51,13 +51,16 @@ namespace worklogService.Controllers
 
         }
 
-        public HttpResponseMessage GetRiZhi(int userid, int staffid)
+        //int userid, int staffid
+        // userid.ToString()
+        // staffid.ToString()
+        public HttpResponseMessage GetRiZhi()
         {
             string res = "";
             BaseService baseservice = new BaseService();
             IList nbhstaff = baseservice.ExecuteSQL("with cte as " +
                             "( " +
-                            " select row=row_number()over(order by getdate()), * from WktuserShareUserId where SharePresonid =  " + userid.ToString() + " and WktuserShareUserId.STATE = 0 and Id > " + staffid.ToString() +
+                            " select row=row_number()over(order by getdate()), * from WktuserShareUserId where SharePresonid =  " +758+ " and WktuserShareUserId.STATE = 0 and Id > " +2000+
                             ") " +
                             " select * from cte where row between " + "1" + " and " + "10");
 
