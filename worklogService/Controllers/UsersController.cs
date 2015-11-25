@@ -103,6 +103,60 @@ namespace worklogService.Controllers
 
 
 
+        public class PhoneNum
+        {
+            string phoneNumstring;
+
+            public string PhoneNumstring
+            {
+                get { return phoneNumstring; }
+                set { phoneNumstring = value; }
+            }
+
+          
+            string perId;
+
+            public string PerId
+            {
+                get { return perId; }
+                set { perId = value; }
+            }
+
+        }
+
+        public HttpResponseMessage GetSendPhoneNum([FromUri]string phonenum,[FromUri]string uid)
+        {
+            BaseService baseService = new BaseService ();
+
+            string res = "";
+            string phoneNum = phonenum;
+            string perid =uid;
+            long id = long.Parse(perid);
+            WkTUser w = new WkTUser();
+            w = (WkTUser)baseService.loadEntity(w, id);
+
+            w.KuPhone = phoneNum;
+            try
+            {
+                baseService.SaveOrUpdateEntity(w);
+                res = "成功";
+            }
+            catch(Exception ex)
+            {
+                res = ex.Message;
+            }
+
+            
+            //string data = JsonTools.ObjectToJson(l);
+            string data = "1";
+            var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + " \"data\":" + data + "}";
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+            };
+            return result;
+        
+        }
 
         public HttpResponseMessage GetAttenceInfo(int id)
         {
@@ -197,10 +251,7 @@ namespace worklogService.Controllers
             };
             return result;
         }
-
-
-
-
+        
         // GET api/users
         public IEnumerable<string> Get()
         {
