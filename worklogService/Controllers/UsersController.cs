@@ -15,6 +15,41 @@ namespace worklogService.Controllers
     public class UsersController : ApiController
     {
 
+
+
+
+
+        public class Body
+        {
+            string base64str; //{ get; set; }
+
+            public string Base64str
+            {
+                get { return base64str; }
+                set { base64str = value; }
+            }
+        
+        }
+        public HttpResponseMessage UploadHeadlmg([FromBody]Body base64str,[FromUri]int id)
+        {
+            string res = "1";
+
+            ImgBase64 base64 = new ImgBase64();
+
+            res = base64.Base64StringToImage(base64str.Base64str, id);
+
+
+
+
+            var jsonStr = "{\"Message\":" + "\"" + res  + "\" }";
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+            };
+            return result;
+        
+        }
+
         public HttpResponseMessage GetsignExitInfo(int id)
         {
 
@@ -332,6 +367,9 @@ namespace worklogService.Controllers
                          PersonInfo per = new PersonInfo();
                          per.Id = n.Id.ToString();
                          per.PersonName = n.KuName;
+                         per.PersonPhone = n.KuPhone;
+                         per.MD5code = n.ImgMD5Code;
+                         //per.Base64img = n.Base64Img;
                          pers.Add(per);
                      
                      }
@@ -429,6 +467,10 @@ namespace worklogService.Controllers
                 per.PersonDept = d;
                 per.PersonRole = role;
                 per.PersonAccount = u.KuLid;
+                //if(u.im)
+                per.MD5code = u.ImgMD5Code;
+                per.Base64img = u.Base64Img;
+
 
                 
                 data =  JsonTools.ObjectToJson(per);

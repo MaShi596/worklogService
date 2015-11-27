@@ -170,6 +170,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="CommonMethod\CNDate.cs" />
+    <Compile Include="CommonMethod\ImgBase64.cs" />
     <Compile Include="CommonMethod\JsonTools.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RiZhiController.cs" />
@@ -325,6 +326,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Images\Icons\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

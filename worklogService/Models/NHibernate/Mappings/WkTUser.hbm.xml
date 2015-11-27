@@ -38,7 +38,14 @@
 
     <property name="DutyTimes" column="DutyTimes" type="int"/>
 
-    
+   
+    <property name="ImgMD5Code" column="ImgMD5Code" type="string"/>
+    <property name="Base64Img" column="Base64Img" type="string" length="100000"/>
+    <!--<property name="Base64Img">
+      
+      <column name="Base64Img" type ="string" sql-type="varchar(max)"/>
+    </property>-->
+   
 
     <many-to-one name="Kdid" class="worklogService.Models.WkTDept,worklogService" lazy="false">
       <!--not-null="true" cascade="all" outer-join="auto" update="true" insert="true" column="KD_ID">-->

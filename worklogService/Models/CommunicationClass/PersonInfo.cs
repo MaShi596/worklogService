@@ -61,5 +61,21 @@ namespace worklogService.Models.CommunicationClass
             set { personPhone = value; }
         }
 
+        string mD5code;
+
+        public string MD5code
+        {
+            get { return mD5code; }
+            set { mD5code = value; }
+        }
+
+        string base64img;
+
+        public string Base64img
+        {
+            get { return base64img; }
+            set { base64img = value; }
+        }
+
     }
 }

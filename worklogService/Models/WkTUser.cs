@@ -207,6 +207,22 @@ namespace worklogService.Models
         }
 
 
+        private string base64Img;
+
+        public virtual string Base64Img
+        {
+            get { return base64Img; }
+            set { base64Img = value; }
+        }
+
+        private string imgMD5Code;
+
+        public virtual string ImgMD5Code
+        {
+            get { return imgMD5Code; }
+            set { imgMD5Code = value; }
+        }
+
         private int dutyTimes;
         public virtual int DutyTimes
         {
