@@ -202,34 +202,216 @@ namespace worklogService.Controllers
         }
 
 
-        public HttpResponseMessage GetOwnRiZhi(int userid, int staffid)//获得自己的日志
+        public HttpResponseMessage GetOwnRiZhi(string userid, string logtick)//获得自己的日志
         {
+            //string res = "";
+            //BaseService baseservice = new BaseService();
+            //IList nbhstaff = baseservice.loadEntityList("from StaffLog where State=" + (int)IEntity.stateEnum.Normal + "and Staff=" + userid.ToString() + "and Id>" + staffid.ToString() + "order by WriteTime desc");
+            //List<OwnStaff> ownlist = new List<OwnStaff>();
+            //if (nbhstaff != null && nbhstaff.Count > 0)
+            //{
+            //    foreach (StaffLog sl in nbhstaff)
+            //    {
+            //        OwnStaff st = new OwnStaff();
+            //        st.Id = sl.Id;
+            //        st.Time = new DateTime(Convert.ToInt64(sl.TimeStamp.ToString())).ToString("yyyy年MM月dd日 HH:mm");
+            //        st.Contents = HtmlToReguFormat(sl.Content.ToString());
+            //        ownlist.Add(st);
+            //    }
+            //    OwnStaffAll l = new OwnStaffAll();
+            //    l.List = ownlist;
+            //    res = "成功";
+            //    string data = JsonTools.ObjectToJson(l);
+            //    var jsonStr = "{\"Mseeage\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+            //    var result = new HttpResponseMessage(HttpStatusCode.OK)
+            //    {
+            //        Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+            //    };
+            //    return result;
+            //}
+            //return null;
+
+
+
+
+
+
             string res = "";
+
+
             BaseService baseservice = new BaseService();
-            IList nbhstaff = baseservice.loadEntityList("from StaffLog where State=" + (int)IEntity.stateEnum.Normal + "and Staff=" + userid.ToString() + "and Id>" + staffid.ToString() + "order by WriteTime desc");
-            List<OwnStaff> ownlist = new List<OwnStaff>();
-            if (nbhstaff != null && nbhstaff.Count > 0)
+
+            string sqlstr = "";
+            if (logtick == "0")
             {
-                foreach (StaffLog sl in nbhstaff)
+                //sqlstr = "with cte as " +
+                //            "( " +
+                //            " select row=row_number()over(order by getdate()), * from WktuserShareUserId where SharePresonid =  " + userid.ToString() + " and WktuserShareUserId.STATE = 0 and WriteTime > " + logtick.ToString() +
+                //            ") " +
+                //            " select * from cte where row between " + "1" + " and " + "10";
+
+                sqlstr = "from StaffLog where State=" + (int)IEntity.stateEnum.Normal + "and Staff=" + userid.ToString() + "and WriteTime >" + logtick + "order by WriteTime desc";
+
+            }
+            else
+            {
+                sqlstr = "from StaffLog where State=" + (int)IEntity.stateEnum.Normal + "and Staff=" + userid.ToString() + "and WriteTime <" + logtick + "order by WriteTime desc";
+
+            }
+
+
+
+            IList nbhstaff = baseservice.loadEntityList(sqlstr);
+
+
+
+            List<RiZhiinfo> stafflist = new List<RiZhiinfo>();
+
+            if (nbhstaff != null && nbhstaff.Count > 0 && nbhstaff.Count >= 10)
+            {
+                for (int i = 0; i < 9; i++)
                 {
-                    OwnStaff st = new OwnStaff();
-                    st.Id = sl.Id;
-                    st.Time = new DateTime(Convert.ToInt64(sl.TimeStamp.ToString())).ToString("yyyy年MM月dd日 HH:mm");
-                    st.Contents = HtmlToReguFormat(sl.Content.ToString());
-                    ownlist.Add(st);
+                    //object[] sf = (object[])nbhstaff[i];
+                    RiZhiinfo st = new RiZhiinfo();
+                    // Personinfo p = new Personinfo();
+                    //st.PersonId = sf[3].ToString();//分享人的ID
+                    //st.PersonName = sf[6].ToString();//分享人的姓名
+                    //WkTUser user = (WkTUser)nbhstaff[i];
+
+                    //long m = user.Kdid.Id;
+                    //WkTDept dept = new WkTDept();
+                    //dept = (WkTDept)baseservice.loadEntity(dept, m);
+                    //st.PersonDept = dept.KdName;//分享人的部门
+                    st.Logtick = ((StaffLog)nbhstaff[i]).WriteTime.ToString();
+                    //st.PersonMD5code = user.ImgMD5Code;
+                    st.Contenttxt140 = HtmlToReguFormat140(((StaffLog)nbhstaff[i]).Content);//日志内容去格式前140
+                    //st.ContenttxtAll = sf[5].ToString();//日志全部内容
+                    st.RizhiTime = new DateTime(((StaffLog)nbhstaff[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm");//日志时间
+                    st.RizhiId = ((StaffLog)nbhstaff[i]).Id.ToString(); //日志id
+                    st.Imglist = HtmlToReguForimg(((StaffLog)nbhstaff[i]).Content);//日志图片
+                    //IList<Comments> q = ((StaffLog)nbhstaff[i]).Comments;
+                    List<comm> ps = new List<comm>();
+                    //IList c = baseservice.loadEntityList("from StaffLog where State=" + (int)IEntity.stateEnum.Normal + "and Id=" + st.RizhiId);
+
+
+                    IList<Comments> r = ((StaffLog)nbhstaff[i]).Comments;
+                    foreach (Comments s in r)
+                    {
+
+                        string sqql = "select u from WkTUser u where u.KuName='" + s.CommentPersonName.Trim() + "'";
+                        WkTUser ww = (WkTUser)baseservice.loadEntityList(sqql)[0];
+
+
+                        comm p = new comm();
+                        p.Id = ww.Id.ToString();
+                        p.Na = s.CommentPersonName;//评论人名字
+                        //IList d = baseservice.loadEntityList("from StaffLog where State=" + 758);
+                        //foreach(WkTUser d1 in d)
+                        //{
+                        //    p.Id = d1.Id;
+                        //}
+                        p.Co = s.Content;//评论内容
+                        p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm");
+                        ps.Add(p);
+                    }
+
+                    st.Comments = ps;
+                    stafflist.Add(st);
                 }
-                OwnStaffAll l = new OwnStaffAll();
-                l.List = ownlist;
+
+                RiZhiAll l = new RiZhiAll();
+                l.List = stafflist;
                 res = "成功";
                 string data = JsonTools.ObjectToJson(l);
-                var jsonStr = "{\"Mseeage\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+                var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
                 var result = new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
                 };
                 return result;
             }
-            return null;
+            else if (nbhstaff != null && nbhstaff.Count > 0 && nbhstaff.Count < 10)
+            {
+
+                for (int i = 0; i < nbhstaff.Count; i++)
+                {
+                    //object[] sf = (object[])nbhstaff[i];
+                    RiZhiinfo st = new RiZhiinfo();
+                    // Personinfo p = new Personinfo();
+                    //st.PersonId = sf[3].ToString();//分享人的ID
+                    //st.PersonName = sf[6].ToString();//分享人的姓名
+                    //WkTUser user = (WkTUser)nbhstaff[i];
+
+                    //long m = user.Kdid.Id;
+                    //WkTDept dept = new WkTDept();
+                    //dept = (WkTDept)baseservice.loadEntity(dept, m);
+                    //st.PersonDept = dept.KdName;//分享人的部门
+                    st.Logtick = ((StaffLog)nbhstaff[i]).WriteTime.ToString();
+                    //st.PersonMD5code = user.ImgMD5Code;
+                    st.Contenttxt140 = HtmlToReguFormat140(((StaffLog)nbhstaff[i]).Content);//日志内容去格式前140
+                    //st.ContenttxtAll = sf[5].ToString();//日志全部内容
+                    st.RizhiTime = new DateTime(((StaffLog)nbhstaff[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm");//日志时间
+                    st.RizhiId = ((StaffLog)nbhstaff[i]).Id.ToString(); //日志id
+                    st.Imglist = HtmlToReguForimg(((StaffLog)nbhstaff[i]).Content);//日志图片
+                    //IList<Comments> q = ((StaffLog)nbhstaff[i]).Comments;
+                    List<comm> ps = new List<comm>();
+                    //IList c = baseservice.loadEntityList("from StaffLog where State=" + (int)IEntity.stateEnum.Normal + "and Id=" + st.RizhiId);
+
+
+                    IList<Comments> r = ((StaffLog)nbhstaff[i]).Comments;
+                    foreach (Comments s in r)
+                    {
+
+                        string sqql = "select u from WkTUser u where u.KuName='" + s.CommentPersonName.Trim() + "'";
+                        WkTUser ww = (WkTUser)baseservice.loadEntityList(sqql)[0];
+
+
+                        comm p = new comm();
+                        p.Id = ww.Id.ToString();
+                        p.Na = s.CommentPersonName;//评论人名字
+                        //IList d = baseservice.loadEntityList("from StaffLog where State=" + 758);
+                        //foreach(WkTUser d1 in d)
+                        //{
+                        //    p.Id = d1.Id;
+                        //}
+                        p.Co = s.Content;//评论内容
+                        p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm");
+                        ps.Add(p);
+                    }
+
+                    st.Comments = ps;
+                    stafflist.Add(st);
+                }
+
+                RiZhiAll l = new RiZhiAll();
+                l.List = stafflist;
+                res = "成功";
+                string data = JsonTools.ObjectToJson(l);
+                var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+                var result = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+                };
+                return result;
+
+            }
+
+            else
+            {
+                res = "没有内容";
+                string data = "1";//JsonTools.ObjectToJson(l);
+                var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+                var result = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+                };
+                return result;
+
+
+            }
+
+
+
         }
 
         public IEnumerable<long> Get()
