@@ -53,7 +53,9 @@ namespace worklogService.Controllers
                 set { list = value; }
             }
         }
-        public HttpResponseMessage GetRiZhi(int userid, int staffid)//别人分享给自己的日志
+
+
+        public HttpResponseMessage GetRiZhi1(int userid, int staffid)//别人分享给自己的日志
         {
             string res = "";
             BaseService baseservice = new BaseService();
@@ -154,7 +156,8 @@ namespace worklogService.Controllers
                 if (mc[j].Value.Contains("src"))
                 {
                     contentText = mc[j].Value;
-                    a.Add(contentText);
+                    string sttr = GetHtmlImageUrlList(contentText)[0];
+                    a.Add(sttr);
                 }
                 else
                 {
@@ -286,11 +289,18 @@ namespace worklogService.Controllers
                 get { return co; }
                 set { co = value; }
             }
-            long id;
-            public long Id
+            string id;
+            public string Id
             {
                 get { return id; }
                 set { id = value; }
+            }
+            string commtime;
+
+            public string Commtime
+            {
+                get { return commtime; }
+                set { commtime = value; }
             }
         }
         public class RiZhiinfo
@@ -301,8 +311,8 @@ namespace worklogService.Controllers
             //    get { return personinfo; }
             //    set { personinfo = value; }
             //}
-            long personId;
-            public long PersonId
+            string personId;
+            public string PersonId
             {
                 get { return personId; }
                 set { personId = value; }
@@ -319,8 +329,8 @@ namespace worklogService.Controllers
                 get { return personDept; }
                 set { personDept = value; }
             }
-            long rizhiId;
-            public long RizhiId
+            string rizhiId;
+            public string RizhiId
             {
                 get { return rizhiId; }
                 set { rizhiId = value; }
@@ -355,12 +365,28 @@ namespace worklogService.Controllers
                 get { return imglist; }
                 set { imglist = value; }
             }
+            string logtick;
+
+            public string Logtick
+            {
+                get { return logtick; }
+                set { logtick = value; }
+            }
             //string imgUrl;
             //public string ImgUrl
             //{
             //    get { return imgUrl; }
             //    set { imgUrl = value; }
             //}
+
+            string personMD5code;
+
+            public string PersonMD5code
+            {
+                get { return personMD5code; }
+                set { personMD5code = value; }
+            }
+
         }
 
         public class RiZhiAll
@@ -372,16 +398,99 @@ namespace worklogService.Controllers
                 set { list = value; }
             }
         }
-        public HttpResponseMessage GetRiZhi1(string userid, string staffid)
+
+
+        public static string[] GetHtmlImageUrlList(string sHtmlText)
+        {
+            // 定义正则表达式用来匹配 img 标签   
+            Regex regImg = new Regex(@"<img\b[^<>]*?\bsrc[\s\t\r\n]*=[\s\t\r\n]*[""']?[\s\t\r\n]*(?<imgUrl>[^\s\t\r\n""'<>]*)[^<>]*?/?[\s\t\r\n]*>", RegexOptions.IgnoreCase);
+
+            // 搜索匹配的字符串   
+            MatchCollection matches = regImg.Matches(sHtmlText);
+            int i = 0;
+            string[] sUrlList = new string[matches.Count];
+            // 取得匹配项列表   
+            foreach (Match match in matches)
+                sUrlList[i++] = match.Groups["imgUrl"].Value;
+            return sUrlList;
+        }
+
+
+
+        public HttpResponseMessage GetContentall([FromUri]string logid)
         {
             string res = "";
-            BaseService baseservice = new BaseService();
-            IList nbhstaff = baseservice.ExecuteSQL("with cte as " +
-                            "( " +
-                            " select row=row_number()over(order by getdate()), * from WktuserShareUserId where SharePresonid =  " + userid.ToString() + " and WktuserShareUserId.STATE = 0 and Id > " + staffid.ToString() +
-                            ") " +
-                            " select * from cte where row between " + "1" + " and " + "10");
 
+            BaseService baseservice = new BaseService();
+
+            StaffLog sl = new StaffLog();
+
+            sl = (StaffLog)baseservice.loadEntity(sl, Convert.ToInt64(logid));
+
+            if (sl != null && sl.Id > 0)
+            {
+
+                res = "成功";
+
+                string content = sl.Content;
+                string data = JsonTools.ObjectToJson(content);
+
+                var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+                var result = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+                };
+                return result;
+            }
+            else
+            {
+
+                res = "错误";
+                string data = "1";
+                var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+                var result = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+                };
+                return result;
+            
+            }
+
+             
+        
+        }
+
+        public HttpResponseMessage GetRiZhi(string userid, string logtick)
+        {
+            string res = "";
+
+
+            BaseService baseservice = new BaseService();
+
+            string sqlstr = "";
+            if (logtick == "0")
+            {
+                sqlstr = "with cte as " +
+                            "( " +
+                            " select row=row_number()over(order by getdate()), * from WktuserShareUserId where SharePresonid =  " + userid.ToString() + " and WktuserShareUserId.STATE = 0 and WriteTime > " + logtick.ToString() +
+                            ") " +
+                            " select * from cte where row between " + "1" + " and " + "10";
+            }
+            else
+            {
+                sqlstr = "with cte as " +
+                            "( " +
+                            " select row=row_number()over(order by getdate()), * from WktuserShareUserId where SharePresonid =  " + userid.ToString() + " and WktuserShareUserId.STATE = 0 and WriteTime < " + logtick.ToString() +
+                            ") " +
+                            " select * from cte where row between " + "1" + " and " + "10";
+ 
+
+            
+            }
+            IList nbhstaff = baseservice.ExecuteSQL(sqlstr);
+
+            
+            
             List<RiZhiinfo> stafflist = new List<RiZhiinfo>();
 
             if (nbhstaff != null && nbhstaff.Count > 0)
@@ -391,19 +500,20 @@ namespace worklogService.Controllers
                     object[] sf = (object[])nbhstaff[i];
                     RiZhiinfo st = new RiZhiinfo();
                     // Personinfo p = new Personinfo();
-                    st.PersonId = Convert.ToInt64(sf[3].ToString());//分享人的ID
+                    st.PersonId = sf[3].ToString();//分享人的ID
                     st.PersonName = sf[6].ToString();//分享人的姓名
                     WkTUser user = new WkTUser();
-                    user = (WkTUser)baseservice.loadEntity(user, st.PersonId);
+                    user = (WkTUser)baseservice.loadEntity(user, Convert.ToInt64(st.PersonId));
                     long m = user.Kdid.Id;
                     WkTDept dept = new WkTDept();
                     dept = (WkTDept)baseservice.loadEntity(dept, m);
                     st.PersonDept = dept.KdName;//分享人的部门
-
+                    st.Logtick = sf[4].ToString();
+                    st.PersonMD5code = user.ImgMD5Code;
                     st.Contenttxt140 = HtmlToReguFormat140(sf[5].ToString());//日志内容去格式前140
-                    st.ContenttxtAll = sf[5].ToString();//日志全部内容
+                    //st.ContenttxtAll = sf[5].ToString();//日志全部内容
                     st.RizhiTime = new DateTime(Convert.ToInt64(sf[4].ToString())).ToString("yyyy年MM月dd日 HH:mm");//日志时间
-                    st.RizhiId = int.Parse(sf[7].ToString()); //日志id
+                    st.RizhiId = sf[7].ToString(); //日志id
                     st.Imglist = HtmlToReguForimg(sf[5].ToString());//日志图片
                     List<Comments> q = new List<Comments>();
                     List<comm> ps = new List<comm>();
@@ -415,8 +525,13 @@ namespace worklogService.Controllers
                             IList<Comments> r = n.Comments;
                             foreach (Comments s in r)
                             {
+
+                                string sqql = "select u from WkTUser u where u.KuName='" + s.CommentPersonName.Trim() + "'";
+                                WkTUser ww = (WkTUser)baseservice.loadEntityList(sqql)[0];
+
+
                                 comm p = new comm();
-                                // p.Id = s.Id;
+                                p.Id = ww.Id.ToString();
                                 p.Na = s.CommentPersonName;//评论人名字
                                 //IList d = baseservice.loadEntityList("from StaffLog where State=" + 758);
                                 //foreach(WkTUser d1 in d)
@@ -424,6 +539,7 @@ namespace worklogService.Controllers
                                 //    p.Id = d1.Id;
                                 //}
                                 p.Co = s.Content;//评论内容
+                                p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm");
                                 ps.Add(p);
                             }
                         }
@@ -431,18 +547,31 @@ namespace worklogService.Controllers
                     st.Comments = ps;
                     stafflist.Add(st);
                 }
+
                 RiZhiAll l = new RiZhiAll();
                 l.List = stafflist;
                 res = "成功";
                 string data = JsonTools.ObjectToJson(l);
-                var jsonStr = "{\"Mseeage\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+                var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
                 var result = new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
                 };
                 return result;
             }
-            return null;
+            else
+            {
+                res = "没有内容";
+                string data = "1";//JsonTools.ObjectToJson(l);
+                var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+                var result = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+                };
+                return result;
+
+            
+            }
         }
 
     }
