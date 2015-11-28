@@ -173,6 +173,7 @@
     <Compile Include="CommonMethod\ImgBase64.cs" />
     <Compile Include="CommonMethod\JsonTools.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\RiChengController.cs" />
     <Compile Include="Controllers\RiZhiController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
@@ -189,6 +190,7 @@
     <Compile Include="Models\Holiday.cs" />
     <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\StaffLog.cs" />
+    <Compile Include="Models\StaffSchedule.cs" />
     <Compile Include="Models\UsuallyDay.cs" />
     <Compile Include="Models\WkTDept.cs" />
     <Compile Include="Models\WkTRole.cs" />
@@ -281,6 +283,7 @@
     <EmbeddedResource Include="Models\NHibernate\Mappings\WorkDay.hbm.xml" />
     <Content Include="Models\NHibernate\Mappings\Comments.hbm.xml" />
     <Content Include="Models\NHibernate\Mappings\StaffLog.hbm.xml" />
+    <Content Include="Models\NHibernate\Mappings\StaffSchedule.hbm.xml" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
