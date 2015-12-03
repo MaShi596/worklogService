@@ -175,6 +175,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RiChengController.cs" />
     <Compile Include="Controllers\RiZhiController.cs" />
+    <Compile Include="Controllers\SuiBiController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="DBoperate\BaseService.cs" />
@@ -191,11 +192,11 @@
     <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\StaffLog.cs" />
     <Compile Include="Models\StaffSchedule.cs" />
+    <Compile Include="Models\SuiBi.cs" />
     <Compile Include="Models\UsuallyDay.cs" />
     <Compile Include="Models\WkTDept.cs" />
     <Compile Include="Models\WkTRole.cs" />
     <Compile Include="Models\WkTUser.cs" />
-    <Compile Include="Models\Wktuser_M_Dept.cs" />
     <Compile Include="Models\WorkDay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -285,7 +286,7 @@
     <Content Include="Models\NHibernate\Mappings\Comments.hbm.xml" />
     <Content Include="Models\NHibernate\Mappings\StaffLog.hbm.xml" />
     <Content Include="Models\NHibernate\Mappings\StaffSchedule.hbm.xml" />
-    <EmbeddedResource Include="Models\NHibernate\Mappings\Wktuser_M_Dept.hbm.xml" />
+    <Content Include="Models\NHibernate\Mappings\SuiBi.hbm.xml" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
