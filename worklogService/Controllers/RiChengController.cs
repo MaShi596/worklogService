@@ -143,6 +143,24 @@ namespace worklogService.Controllers
                 set { richengSub = value; }
             }
 
+            string arrangeManId;
+
+            public string ArrangeManId
+            {
+                get { return arrangeManId; }
+                set { arrangeManId = value; }
+            }
+
+            string timeTick;
+
+            public string TimeTick
+            {
+                get { return timeTick; }
+                set { timeTick = value; }
+            }
+
+
+
         }
 
         public class RiChengAll
@@ -198,8 +216,9 @@ namespace worklogService.Controllers
                     WkTUser user = new WkTUser();
                     user = (WkTUser)baseservice.loadEntity(user, Convert.ToInt64(rc[6]));
                     ric.PersonName = user.KuName;
-                    ric.PersonDeptName = user.Kdid.KdName.ToString();
+                    ric.PersonDeptName = user.Kdid.KdName.ToString().Trim();
                     ric.RichengSub = rc[4].ToString();
+                    ric.ArrangeManId = rc[10].ToString();
                     info.Add(ric);
                 }
 
@@ -270,8 +289,10 @@ namespace worklogService.Controllers
                     WkTUser user = new WkTUser();
                     user = (WkTUser)baseservice.loadEntity(user, Convert.ToInt64(rc[6]));
                     ric.PersonName = user.KuName;
-                    ric.PersonDeptName = user.Kdid.KdName.ToString();
+                    ric.PersonDeptName = user.Kdid.KdName.ToString().Trim();
                     ric.RichengSub = rc[4].ToString();
+                    ric.ArrangeManId = rc[10].ToString();
+                    ric.TimeTick = rc[3].ToString();
                     info.Add(ric);
                 }
 
