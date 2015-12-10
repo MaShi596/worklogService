@@ -41,6 +41,9 @@
    
     <property name="ImgMD5Code" column="ImgMD5Code" type="string"/>
     <property name="Base64Img" column="Base64Img" type="string" length="100000"/>
+
+    <property name="IMToken" column="IMToken" type="string"/>
+    
     <!--<property name="Base64Img">
       
       <column name="Base64Img" type ="string" sql-type="varchar(max)"/>

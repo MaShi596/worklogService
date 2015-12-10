@@ -200,6 +200,9 @@
     <Compile Include="Models\Wktuser_M_Dept.cs" />
     <Compile Include="Models\WorkDay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RongCloud\InterfaceUrl.cs" />
+    <Compile Include="RongCloud\RongCloudServer.cs" />
+    <Compile Include="RongCloud\RongHttpClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />

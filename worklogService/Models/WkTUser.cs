@@ -229,5 +229,13 @@ namespace worklogService.Models
             get { return dutyTimes; }
             set { dutyTimes = value; }
         }
+
+        private string iMToken;
+
+        public virtual string IMToken
+        {
+            get { return iMToken; }
+            set { iMToken = value; }
+        }
     }
 }

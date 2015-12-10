@@ -77,5 +77,12 @@ namespace worklogService.Models.CommunicationClass
             set { base64img = value; }
         }
 
+        string iMToken;
+
+        public string IMToken
+        {
+            get { return iMToken; }
+            set { iMToken = value; }
+        }
     }
 }

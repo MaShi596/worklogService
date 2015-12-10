@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using worklogService.CommonMethod;
 using worklogService.DBoperate;
 using worklogService.Models;
 using worklogService.Models.CommunicationClass;
+using worklogService.RongCloud;
 namespace worklogService.Controllers
 {
     public class UsersController : ApiController
@@ -18,6 +20,7 @@ namespace worklogService.Controllers
 
 
 
+        #region 更新头像
 
         public class Body
         {
@@ -30,6 +33,8 @@ namespace worklogService.Controllers
             }
         
         }
+
+        ///更新头像
         public HttpResponseMessage UploadHeadlmg([FromBody]Body base64str,[FromUri]int id)
         {
             string res = "1";
@@ -50,6 +55,11 @@ namespace worklogService.Controllers
         
         }
 
+        #endregion
+
+
+        #region 签退
+        //签退
         public HttpResponseMessage GetsignExitInfo(int id)
         {
 
@@ -133,11 +143,11 @@ namespace worklogService.Controllers
             };
             return result;
         }
+        #endregion
 
 
 
-
-
+        #region 设置手机号
         public class PhoneNum
         {
             string phoneNumstring;
@@ -193,6 +203,11 @@ namespace worklogService.Controllers
         
         }
 
+        #endregion
+
+
+
+        #region 获取签到信息 签到
         public HttpResponseMessage GetAttenceInfo(int id)
         {
 
@@ -286,29 +301,12 @@ namespace worklogService.Controllers
             };
             return result;
         }
-        
-        // GET api/users
-        public IEnumerable<string> Get()
-        {
+
+        #endregion
+     
 
 
-            BaseService baseservice = new BaseService();
-
-            IList i = baseservice.loadEntityList("select u from WkTUser u ");
-
-
-            string[] b = new string[84];
-            int num = 0;
-            foreach (WkTUser o in i)
-            {
-                b[num] = o.KuName;
-
-                num++;
-            }
-            return b;
-            //return new string[] { "value1", "value2" };
-        }
-
+        #region 获取部门人员列表
         public class DeptsandPerson
         {
             Dept dept;
@@ -370,6 +368,8 @@ namespace worklogService.Controllers
                          per.PersonPhone = n.KuPhone;
                          per.MD5code = n.ImgMD5Code;
                          //per.Base64img = n.Base64Img;
+                         per.IMToken = n.IMToken;
+                         per.PersonDept = d;
                          pers.Add(per);
                      
                      }
@@ -401,9 +401,11 @@ namespace worklogService.Controllers
 
         }
 
-        
-        
+        #endregion
 
+
+
+        #region 登陆获取个人信息
         public class namepwd
         {
 
@@ -411,7 +413,7 @@ namespace worklogService.Controllers
             public string Pwd { get; set;}
 
         }
-
+       
 
         public HttpResponseMessage toLoginMessage([FromBody]namepwd nn)
         {
@@ -467,6 +469,7 @@ namespace worklogService.Controllers
                 per.PersonDept = d;
                 per.PersonRole = role;
                 per.PersonAccount = u.KuLid;
+                per.IMToken = u.IMToken;
                 //if(u.im)
                 per.MD5code = u.ImgMD5Code;
                 per.Base64img = u.Base64Img;
@@ -487,6 +490,133 @@ namespace worklogService.Controllers
             return result;
         }
 
+        #endregion
+
+        public HttpResponseMessage GetUserToken(int id)
+        {
+            string res = "";
+
+
+            string data = "";
+
+
+
+         
+
+
+
+            var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + " \"data\":" + data + "}";
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+            };
+            return result;
+
+        
+        }
+
+
+        public HttpResponseMessage GetUserInfo(string uid)
+        {
+            string res = "错误";
+
+
+            string data = "1";
+
+            BaseService baseService = new BaseService();
+
+            string perid = uid;
+            long id = long.Parse(perid);
+            WkTUser w = new WkTUser();
+            w = (WkTUser)baseService.loadEntity(w, id);
+
+            if (w.Id.ToString() == uid)
+            {
+                res = "成功";
+
+                PersonInfo p = new PersonInfo();
+                p.Id = w.Id.ToString();
+                p.PersonName = w.KuName;
+                if (w.KuPhone != null)
+                {
+                    p.PersonPhone = w.KuPhone.Trim();
+
+                }
+                p.MD5code = w.ImgMD5Code.Trim();
+
+
+                Dept d = new Dept();
+                d.Id = w.Kdid.Id.ToString();
+                d.DeptName = w.Kdid.KdName.Trim();
+                p.PersonDept = d;
+                
+                data = JsonTools.ObjectToJson(p);
+                
+            }
+
+            
+
+
+            var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + " \"data\":" + data + "}";
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+            };
+            return result;
+
+
+        }
+
+
+
+        // GET api/users
+        public IEnumerable<string> Get()
+        {
+
+
+            //BaseService baseservice = new BaseService();
+
+            //IList i = baseservice.loadEntityList("select u from WkTUser u ");
+
+
+            //String retstr = null;
+
+
+
+
+
+
+            
+            
+            //foreach (WkTUser o in i)
+            //{
+            //    if (o.Id != 699 && o.Id != 758)
+            //    {
+
+            //        retstr = RongCloudServer.GetToken(RongCloudServer.appKey, 
+            //            RongCloudServer.appsecret, 
+            //            o.Id.ToString(), 
+            //            o.KuLid.Trim(), 
+            //            "http://www.qqw21.com/article/UploadPic/2012-11/201211259378560.jpg");
+
+            //        if(retstr != null)
+            //        {
+
+            //            JObject obj = JObject.Parse(retstr);
+            //            string s = (string)obj["token"];
+            //            o.IMToken = s;
+
+            //            baseservice.SaveOrUpdateEntity(o);
+
+            //        }
+
+            //    }
+
+            //    //num++;
+            //}
+            ////return b;
+            return new string[] { "value1", "value2" };
+        }
         // GET api/users/5
         public string Get(int id)
         {
@@ -496,6 +626,7 @@ namespace worklogService.Controllers
         // POST api/users
         public void Post([FromBody]string value)
         {
+
         }
 
         // PUT api/users/5
