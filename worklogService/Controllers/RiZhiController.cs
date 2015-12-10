@@ -649,6 +649,7 @@ namespace worklogService.Controllers
                             " select row=row_number()over(order by getdate()), * from WktuserShareUserId where SharePresonid =  " + userid.ToString() + " and WktuserShareUserId.STATE = 0 and WriteTime > " + logtick.ToString() +
                             ") " +
                             " select * from cte where row between " + "1" + " and " + "10";
+                Console.WriteLine(sqlstr);
             }
             else
             {
