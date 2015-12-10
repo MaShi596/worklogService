@@ -88,7 +88,7 @@ namespace worklogService.Controllers
                 sqlstr= "with cte as"+
                     "(select top 100 percent row=row_number()over(order by(SuiBi.WriteTime)desc), dbo.SuiBi.Contents, dbo.SuiBi.WkTUserId, dbo.WK_T_DEPT.KD_NAME, dbo.WK_T_USER.KD_ID, dbo.SuiBi.WriteTime, dbo.SuiBi.STATE, dbo.SuiBi.Id, dbo.WK_T_USER.KU_NAME "+
                     " from  dbo.SuiBi INNER JOIN dbo.WK_T_USER ON dbo.SuiBi.WkTUserId = dbo.WK_T_USER.KU_ID INNER JOIN dbo.WK_T_DEPT ON dbo.WK_T_USER.KD_ID = dbo.WK_T_DEPT.KD_ID "+
-                    " where  dbo.SuiBi.STATE= 0 dbo.SuiBi.WkTUserId="+ userid +" and dbo.SuiBi.WriteTime> "+ sbtime  +
+                    " where  dbo.SuiBi.STATE= 0 and dbo.SuiBi.WkTUserId="+ userid +" and dbo.SuiBi.WriteTime> "+ sbtime  +
                     ")"+
                     "select * from cte where row >0 and row <11 order by WriteTime desc";
                 Console.WriteLine(sqlstr);
@@ -104,7 +104,7 @@ namespace worklogService.Controllers
                 sqlstr = "with cte as" +
                          "(select top 100 percent row=row_number()over(order by(SuiBi.WriteTime)desc), dbo.SuiBi.Contents, dbo.SuiBi.WkTUserId, dbo.WK_T_DEPT.KD_NAME, dbo.WK_T_USER.KD_ID, dbo.SuiBi.WriteTime, dbo.SuiBi.STATE, dbo.SuiBi.Id, dbo.WK_T_USER.KU_NAME " +
                          " from  dbo.SuiBi INNER JOIN dbo.WK_T_USER ON dbo.SuiBi.WkTUserId = dbo.WK_T_USER.KU_ID INNER JOIN dbo.WK_T_DEPT ON dbo.WK_T_USER.KD_ID = dbo.WK_T_DEPT.KD_ID " +
-                         " where  dbo.SuiBi.STATE= 0 dbo.SuiBi.WkTUserId="+ userid +"and dbo.SuiBi.WriteTime<" + sbtime +
+                         " where  dbo.SuiBi.STATE= 0 and dbo.SuiBi.WkTUserId="+ userid +"and dbo.SuiBi.WriteTime<" + sbtime +
                          ")" +
                          "select * from cte where row >0 and row <11 order by WriteTime desc";
                 //sqlstr = "with cte as " +
@@ -127,7 +127,8 @@ namespace worklogService.Controllers
                     st.Suibicontent = o[1].ToString ();
                     st.Personid = o[2].ToString();    
                     st.Persondeptname = o[3].ToString().Trim();              
-                    st.Writetime = new DateTime(Convert.ToInt64(o[5].ToString ())).ToString("yyyy年MM月dd日 HH:mm"); 
+                    st.Writetime = new DateTime(Convert.ToInt64(o[5].ToString())).ToString("yyyy年MM月dd日 HH:mm");
+                    st.TimeTick = o[5].ToString();
                     st.Suibiid = o[7].ToString();
                     st.Personname = o[8].ToString (); 
                     suibilist.Add (st);
@@ -159,7 +160,8 @@ namespace worklogService.Controllers
                 for (int i = 0; i < nbhsuibi.Count; i++)
                 {
                     SuiBiinfo st = new SuiBiinfo();
-                    st.Writetime = new DateTime(((Models.SuiBi)nbhsuibi[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm");
+                    st.Writetime = new DateTime().ToString("yyyy年MM月dd日 HH:mm");
+                    st.TimeTick = ((Models.SuiBi)nbhsuibi[i]).WriteTime.ToString();
                     // st.Suibicontentbefor = Htmlsuibibefor(((Models.SuiBi)nbhsuibi[i]).Contents);
                     st.Suibiid = ((Models.SuiBi)nbhsuibi[i]).Id.ToString();
                     suibilist.Add(st);
@@ -200,7 +202,7 @@ namespace worklogService.Controllers
                  }
              }*/
         }
-        public HttpResponseMessage GetALLSuiBi(string userid, string sbtime)
+        public HttpResponseMessage GetALLSuiBi(string sbtime)
         //获得所有随笔
         {
 
@@ -263,6 +265,7 @@ namespace worklogService.Controllers
                     st.Personid = o[2].ToString();
                     st.Persondeptname = o[3].ToString().Trim();
                     st.Writetime = new DateTime(Convert.ToInt64(o[5].ToString())).ToString("yyyy年MM月dd日 HH:mm");
+                    st.TimeTick = o[5].ToString();
                     st.Suibiid = o[7].ToString();
                     st.Personname = o[8].ToString();
                     suibilist.Add(st);
@@ -295,6 +298,7 @@ namespace worklogService.Controllers
                 {
                     SuiBiinfo st = new SuiBiinfo();
                     st.Writetime = new DateTime(((Models.SuiBi)nbhsuibi[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm");
+                    st.TimeTick = ((Models.SuiBi)nbhsuibi[i]).WriteTime.ToString();
                     // st.Suibicontentbefor = Htmlsuibibefor(((Models.SuiBi)nbhsuibi[i]).Contents);
                     st.Suibiid = ((Models.SuiBi)nbhsuibi[i]).Id.ToString();
                     suibilist.Add(st);
@@ -380,6 +384,15 @@ namespace worklogService.Controllers
                 get { return writetime; }
                 set { writetime = value; }
             }
+
+            string timeTick;
+
+            public string TimeTick
+            {
+                get { return timeTick; }
+                set { timeTick = value; }
+            }
+
 
             public class SuiBiAll
             {
