@@ -355,9 +355,9 @@ namespace worklogService.Controllers
                 {
                     object[] rc = (object[])nbhstaff[i];
                     RiChenginfo ric = new RiChenginfo();
-                    ric.RichengId = rc[8].ToString();//日程Id
-                    ric.PersonId = rc[5].ToString();//分享人Id
-                    ric.RichengContent = rc[2].ToString();//日程内容
+                    ric.RichengId = rc[9].ToString();//日程Id
+                    ric.PersonId = rc[2].ToString();//分享人Id
+                    ric.RichengContent = rc[5].ToString();//日程内容
                     ric.RichengTime = new DateTime(Convert.ToInt64(rc[4])).ToString("yyyy年MM月dd日 HH:mm");//分享时间
                     ric.RemindTime = new DateTime(Convert.ToInt64(rc[7])).ToString("yyyy年MM月dd日 HH:mm");//提醒时间
                     WkTUser user = new WkTUser();
@@ -367,6 +367,8 @@ namespace worklogService.Controllers
                     ric.RichengSub = rc[6].ToString();//日程主题
                     
                     ric.Logtick = rc[4].ToString();
+                    ric.TimeTick = rc[4].ToString();
+                    ric.ArrangeManId = rc[11].ToString();
                     //ric.Contenttxt140 = HtmlToReguFormat140(rc[2].ToString());//日志内容去格式前140
                     info.Add(ric);
                 }
@@ -469,6 +471,8 @@ namespace worklogService.Controllers
                                 st.RemindTime = new DateTime(Convert.ToInt64(sf[9].ToString())).ToString("yyyy年MM月dd日 HH:mm");//提醒时间
                                 st.RichengContent=sf[2].ToString();//日程内容
                                 st.RichengSub=sf[4].ToString();//日程主题
+                                st.ArrangeManId = sf[10].ToString();
+                                st.TimeTick = sf[3].ToString();
 
                                 rlist.Add(st);
                             }
@@ -528,9 +532,9 @@ namespace worklogService.Controllers
                 {
                     object[] rc = (object[])nbhstaff[i];
                     RiChenginfo ric = new RiChenginfo();
-                    ric.RichengId = rc[8].ToString();//日程Id
-                    ric.PersonId = rc[5].ToString();//分享人Id
-                    ric.RichengContent = rc[2].ToString();//日程内容
+                    ric.RichengId = rc[9].ToString();//日程Id
+                    ric.PersonId = rc[2].ToString();//分享人Id
+                    ric.RichengContent = rc[5].ToString();//日程内容
                     ric.RichengTime = new DateTime(Convert.ToInt64(rc[4])).ToString("yyyy年MM月dd日 HH:mm");//分享时间
                     ric.RemindTime = new DateTime(Convert.ToInt64(rc[7])).ToString("yyyy年MM月dd日 HH:mm");//提醒时间
                     WkTUser user = new WkTUser();
@@ -541,6 +545,9 @@ namespace worklogService.Controllers
 
                     ric.Logtick = rc[4].ToString();
                     //ric.Contenttxt140 = HtmlToReguFormat140(rc[2].ToString());//日志内容去格式前140
+
+                    ric.TimeTick = rc[4].ToString();
+                    ric.ArrangeManId = rc[11].ToString();
                     info.Add(ric);
                 }
 
