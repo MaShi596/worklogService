@@ -77,7 +77,7 @@ namespace worklogService.Controllers
                     st.Name = sf[6].ToString();//分享人的姓名
                     st.Contentext = HtmlToReguFormat(sf[5].ToString());
                     //st.Contentext = sf[5].ToString();//日志全部内容
-                    st.TimeText = new DateTime(Convert.ToInt64(sf[4].ToString())).ToString("yyyy年MM月dd日 HH:mm");
+                    st.TimeText = new DateTime(Convert.ToInt64(sf[4].ToString())).ToString("yyyy年MM月dd日 HH:mm:ss");
                     //st.Tag = sf[7]; //日志id
                     //st.ContentClicked += rizhi_ContentClicked;
                     //st.Parent = rz_flowLayoutPanel;
@@ -278,7 +278,7 @@ namespace worklogService.Controllers
                     //st.PersonMD5code = user.ImgMD5Code;
                     st.Contenttxt140 = HtmlToReguFormat140(((StaffLog)nbhstaff[i]).Content);//日志内容去格式前140
                     //st.ContenttxtAll = sf[5].ToString();//日志全部内容
-                    st.RizhiTime = new DateTime(((StaffLog)nbhstaff[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm");//日志时间
+                    st.RizhiTime = new DateTime(((StaffLog)nbhstaff[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm:ss");//日志时间
                     st.RizhiId = ((StaffLog)nbhstaff[i]).Id.ToString(); //日志id
                     st.Imglist = HtmlToReguForimg(((StaffLog)nbhstaff[i]).Content);//日志图片
                     //IList<Comments> q = ((StaffLog)nbhstaff[i]).Comments;
@@ -303,7 +303,7 @@ namespace worklogService.Controllers
                         //    p.Id = d1.Id;
                         //}
                         p.Co = s.Content;//评论内容
-                        p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm");
+                        p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm:ss");
                         ps.Add(p);
                     }
 
@@ -342,7 +342,7 @@ namespace worklogService.Controllers
                     //st.PersonMD5code = user.ImgMD5Code;
                     st.Contenttxt140 = HtmlToReguFormat140(((StaffLog)nbhstaff[i]).Content);//日志内容去格式前140
                     //st.ContenttxtAll = sf[5].ToString();//日志全部内容
-                    st.RizhiTime = new DateTime(((StaffLog)nbhstaff[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm");//日志时间
+                    st.RizhiTime = new DateTime(((StaffLog)nbhstaff[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm:ss");//日志时间
                     st.RizhiId = ((StaffLog)nbhstaff[i]).Id.ToString(); //日志id
                     st.Imglist = HtmlToReguForimg(((StaffLog)nbhstaff[i]).Content);//日志图片
                     //IList<Comments> q = ((StaffLog)nbhstaff[i]).Comments;
@@ -367,7 +367,7 @@ namespace worklogService.Controllers
                         //    p.Id = d1.Id;
                         //}
                         p.Co = s.Content;//评论内容
-                        p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm");
+                        p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm:ss");
                         ps.Add(p);
                     }
 
@@ -687,7 +687,7 @@ namespace worklogService.Controllers
                     st.PersonMD5code = user.ImgMD5Code;
                     st.Contenttxt140 = HtmlToReguFormat140(sf[5].ToString());//日志内容去格式前140
                     //st.ContenttxtAll = sf[5].ToString();//日志全部内容
-                    st.RizhiTime = new DateTime(Convert.ToInt64(sf[4].ToString())).ToString("yyyy年MM月dd日 HH:mm");//日志时间
+                    st.RizhiTime = new DateTime(Convert.ToInt64(sf[4].ToString())).ToString("yyyy年MM月dd日 HH:mm:ss");//日志时间
                     st.RizhiId = sf[7].ToString(); //日志id
                     st.Imglist = HtmlToReguForimg(sf[5].ToString());//日志图片
                     List<Comments> q = new List<Comments>();
@@ -714,7 +714,7 @@ namespace worklogService.Controllers
                                 //    p.Id = d1.Id;
                                 //}
                                 p.Co = s.Content;//评论内容
-                                p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm");
+                                p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm:ss");
                                 ps.Add(p);
                             }
                         }
@@ -812,7 +812,7 @@ namespace worklogService.Controllers
                                 st.PersonMD5code = user1.ImgMD5Code;
                                 st.Contenttxt140 = HtmlToReguFormat140(sf[2].ToString());//日志内容去格式前140
                                 ////st.ContenttxtAll = sf[5].ToString();//日志全部内容
-                                st.RizhiTime = new DateTime(Convert.ToInt64(sf[3].ToString())).ToString("yyyy年MM月dd日 HH:mm");//日志时间
+                                st.RizhiTime = new DateTime(Convert.ToInt64(sf[3].ToString())).ToString("yyyy年MM月dd日 HH:mm:ss");//日志时间
                                 st.RizhiId = sf[1].ToString(); //日志id
                                 st.Imglist = HtmlToReguForimg(sf[2].ToString());//日志图片
                                 List<Comments> q = new List<Comments>();
@@ -836,7 +836,7 @@ namespace worklogService.Controllers
                                             //    p.Id = d1.Id;
                                             //}
                                             p.Co = s.Content;//评论内容
-                                            p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm");
+                                            p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm:ss");
                                             ps.Add(p);
                                         }
                                     }
@@ -916,7 +916,7 @@ namespace worklogService.Controllers
                         st.PersonMD5code = user.ImgMD5Code;
                         st.Contenttxt140 = HtmlToReguFormat140(sf[5].ToString());//日志内容去格式前140
                         //st.ContenttxtAll = sf[5].ToString();//日志全部内容
-                        st.RizhiTime = new DateTime(Convert.ToInt64(sf[4].ToString())).ToString("yyyy年MM月dd日 HH:mm");//日志时间
+                        st.RizhiTime = new DateTime(Convert.ToInt64(sf[4].ToString())).ToString("yyyy年MM月dd日 HH:mm:ss");//日志时间
                         st.RizhiId = sf[7].ToString(); //日志id
                         st.Imglist = HtmlToReguForimg(sf[5].ToString());//日志图片
                         List<Comments> q = new List<Comments>();
@@ -940,7 +940,7 @@ namespace worklogService.Controllers
                                     //    p.Id = d1.Id;
                                     //}
                                     p.Co = s.Content;//评论内容
-                                    p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm");
+                                    p.Commtime = new DateTime(s.TimeStamp).ToString("yyyy年MM月dd日 HH:mm:ss");
                                     ps.Add(p);
                                 }
                             }

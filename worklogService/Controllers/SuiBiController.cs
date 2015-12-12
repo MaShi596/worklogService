@@ -127,7 +127,7 @@ namespace worklogService.Controllers
                     st.Suibicontent = o[1].ToString ();
                     st.Personid = o[2].ToString();    
                     st.Persondeptname = o[3].ToString().Trim();              
-                    st.Writetime = new DateTime(Convert.ToInt64(o[5].ToString())).ToString("yyyy年MM月dd日 HH:mm");
+                    st.Writetime = new DateTime(Convert.ToInt64(o[5].ToString())).ToString("yyyy年MM月dd日 HH:mm:ss");
                     st.TimeTick = o[5].ToString();
                     st.Suibiid = o[7].ToString();
                     st.Personname = o[8].ToString (); 
@@ -264,7 +264,7 @@ namespace worklogService.Controllers
                     st.Suibicontent = o[1].ToString();
                     st.Personid = o[2].ToString();
                     st.Persondeptname = o[3].ToString().Trim();
-                    st.Writetime = new DateTime(Convert.ToInt64(o[5].ToString())).ToString("yyyy年MM月dd日 HH:mm");
+                    st.Writetime = new DateTime(Convert.ToInt64(o[5].ToString())).ToString("yyyy年MM月dd日 HH:mm:ss");
                     st.TimeTick = o[5].ToString();
                     st.Suibiid = o[7].ToString();
                     st.Personname = o[8].ToString();
@@ -297,7 +297,7 @@ namespace worklogService.Controllers
                 for (int i = 0; i < nbhsuibi.Count; i++)
                 {
                     SuiBiinfo st = new SuiBiinfo();
-                    st.Writetime = new DateTime(((Models.SuiBi)nbhsuibi[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm");
+                    st.Writetime = new DateTime(((Models.SuiBi)nbhsuibi[i]).WriteTime).ToString("yyyy年MM月dd日 HH:mm:ss");
                     st.TimeTick = ((Models.SuiBi)nbhsuibi[i]).WriteTime.ToString();
                     // st.Suibicontentbefor = Htmlsuibibefor(((Models.SuiBi)nbhsuibi[i]).Contents);
                     st.Suibiid = ((Models.SuiBi)nbhsuibi[i]).Id.ToString();
@@ -318,7 +318,7 @@ namespace worklogService.Controllers
             else
             {
                 res = "没有内容";
-                string data = "";
+                string data = "1";
                 var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
                 var result = new HttpResponseMessage(HttpStatusCode.OK)
                 {
