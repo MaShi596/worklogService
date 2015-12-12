@@ -62,6 +62,13 @@ namespace worklogService.Models
             set { remindTime = value; }
         }
 
+        private int doState;
+
+        public virtual int DoState
+        {
+            get { return doState; }
+            set { doState = value; }
+        }
 
         private IList<WkTUser> staffScheduleStaffs;
 

@@ -23,6 +23,7 @@
     <property name="Subject" column="Subject" type="String" length="15" />
     <property name="IfRemind" column="IfRemind" type="int" length="1"/>
     <property name="State" column="STATE" type="int" length="1"/>
+    <property name="DoState" column="DoState" type="int" length="1"/>
     <property name="TimeStamp" column="TIMESTAMP" type="long" length="10"/>
   </class> 
 
