@@ -159,7 +159,13 @@ namespace worklogService.Controllers
                 set { timeTick = value; }
             }
 
+            string doState;
 
+            public string DoState
+            {
+                get { return doState; }
+                set { doState = value; }
+            }
 
         }
 
@@ -351,7 +357,7 @@ namespace worklogService.Controllers
 
                         string sql1 = "with cte as " +
                             "( " +
-                            " select row=row_number()over(order by getdate()), * from LOG_T_STAFFSCHEDULE where  ScheduleTime < " + startick.ToString() + " and ScheduleTime >= " + endtick.ToString() + "  and  WkTUserId=" + userid.ToString() +
+                            " select row=row_number()over(order by LOG_T_STAFFSCHEDULE.ScheduleTime DESC ), * from LOG_T_STAFFSCHEDULE where  ScheduleTime < " + startick.ToString() + " and ScheduleTime > " + endtick.ToString() + "  and  WkTUserId=" + userid.ToString() +
                             ") " +
                             " select * from cte ";
                         //where row between " + "1" + " and " + "10";
@@ -378,7 +384,7 @@ namespace worklogService.Controllers
                                 ric.RichengSub = rc[4].ToString();
                                 ric.ArrangeManId = rc[10].ToString();
                                 ric.TimeTick = rc[3].ToString();
-
+                                ric.DoState = getDostate(rc[3].ToString(), rc[11]);//rc[11] == null ? rc[11].ToString() : "null";
                                 rdb1.RichengDayList.Add(ric);
                                 //info.Add(ric);
                                 tick2 = long.Parse(rc[3].ToString());
@@ -507,7 +513,7 @@ namespace worklogService.Controllers
 
                     string sql1 = "with cte as " +
                         "( " +
-                        " select row=row_number()over(order by getdate()), * from LOG_T_STAFFSCHEDULE where  ScheduleTime < " + startick.ToString() + " and ScheduleTime >= " + endtick.ToString() + "  and  WkTUserId=" + userid.ToString() +
+                        " select row=row_number()over(order by LOG_T_STAFFSCHEDULE.ScheduleTime DESC ), * from LOG_T_STAFFSCHEDULE where  ScheduleTime < " + startick.ToString() + " and ScheduleTime > " + endtick.ToString() + "  and  WkTUserId=" + userid.ToString() +
                         ") " +
                         " select * from cte ";
                     //where row between " + "1" + " and " + "10";
@@ -533,6 +539,7 @@ namespace worklogService.Controllers
                             ric.PersonDeptName = user.Kdid.KdName.ToString().Trim();
                             ric.RichengSub = rc[4].ToString();
                             ric.ArrangeManId = rc[10].ToString();
+                            ric.DoState = getDostate(rc[3].ToString(), rc[11]);//rc[11]==null?rc[11].ToString():"null";
                             ric.TimeTick = rc[3].ToString();
                             //info.Add(ric);
                             rdb1.RichengDayList.Add(ric);
@@ -602,7 +609,6 @@ namespace worklogService.Controllers
             }
             
 
-            
 
 
 
@@ -672,6 +678,24 @@ namespace worklogService.Controllers
             //}
         }
 
+        private string getDostate(string timetick,object obj)
+        {
+            if (obj.ToString() == "1")
+            {
+                return obj.ToString();//1
+
+            }
+            else
+            {
+
+                long t = long.Parse(timetick);
+                if (t < DateTime.Now.Ticks)
+                {
+                    return "0";
+                }
+                return "2";
+            }
+        }
         /// <summary>
         /// 获得分享的日程
         /// </summary>
@@ -853,6 +877,57 @@ namespace worklogService.Controllers
                 return RiChengYo(userid, seeid, rctime);
 
             }
+        }
+
+
+        public HttpResponseMessage ChangeDoState(int id)
+        {
+
+            string res = null;
+            string data = null;
+
+            BaseService baseService = new BaseService();
+
+            StaffSchedule s = new StaffSchedule();
+            s = (StaffSchedule)baseService.loadEntity(s,id);
+            if (s != null && s.Id > 0)
+            {
+                if (s.ScheduleTime < DateTime.Now.Ticks)
+                {
+                    res = "已过期无法修改";
+                    data = "1";
+
+                }
+                else 
+                {
+                    if (s.DoState != null)
+                    {
+
+                        s.DoState = 1;
+                        baseService.SaveOrUpdateEntity(s);
+                        res = "修改成功";
+                        data = "1";
+                    }
+
+                
+                }
+            }
+            else
+            {
+                res = "出错";
+                data = "1";
+            }
+
+
+
+            var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+            };
+            return result;
+             
+        
         }
 
         public HttpResponseMessage RiChengYo(string userid,string seeid,string rctime)
