@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Http;
+using System.Web.Script.Serialization;
 using worklogService.CommonMethod;
 using worklogService.DBoperate;
 using worklogService.Models;
@@ -166,7 +168,15 @@ namespace worklogService.Controllers
                 get { return doState; }
                 set { doState = value; }
             }
+            string isRemind;
 
+            public string IsRemind
+            {
+                get { return isRemind; }
+                set { isRemind = value; }
+            }
+
+          
         }
 
         public class RiChengAll
@@ -337,9 +347,10 @@ namespace worklogService.Controllers
 
                 IList firres = baseservice.ExecuteSQL(fstr);
 
-                object[] obj = (object[])firres[0];
+                object[] obj; 
                 if (firres != null && firres.Count > 0)
                 {
+                    obj  = (object[])firres[0];
                     DateTime d = new DateTime(long.Parse(obj[0].ToString()));
                     string str = d.ToString("yyyy-MM-dd");
                     long daytick = d.Date.Ticks;
@@ -385,7 +396,16 @@ namespace worklogService.Controllers
                                 ric.ArrangeManId = rc[10].ToString();
                                 ric.TimeTick = rc[3].ToString();
                                 ric.DoState = getDostate(rc[3].ToString(), rc[11]);//rc[11] == null ? rc[11].ToString() : "null";
+                                ric.IsRemind = rc[5].ToString();
+                               
+                                    ric.RemindTime = new DateTime(Convert.ToInt64(rc[9])).ToString("yyyy年MM月dd日 HH:mm:ss");
+                                
+ 
+                                
+                               
+                                
                                 rdb1.RichengDayList.Add(ric);
+                                
                                 //info.Add(ric);
                                 tick2 = long.Parse(rc[3].ToString());
 
@@ -880,7 +900,7 @@ namespace worklogService.Controllers
         }
 
 
-        public HttpResponseMessage ChangeDoState(int id)
+        public HttpResponseMessage GetChangeDoState([FromUri]string id)
         {
 
             string res = null;
@@ -889,7 +909,7 @@ namespace worklogService.Controllers
             BaseService baseService = new BaseService();
 
             StaffSchedule s = new StaffSchedule();
-            s = (StaffSchedule)baseService.loadEntity(s,id);
+            s = (StaffSchedule)baseService.loadEntity(s,long.Parse(id));
             if (s != null && s.Id > 0)
             {
                 if (s.ScheduleTime < DateTime.Now.Ticks)
@@ -904,9 +924,10 @@ namespace worklogService.Controllers
                     {
 
                         s.DoState = 1;
+                        s.RemindTime = DateTime.Now.Ticks;
                         baseService.SaveOrUpdateEntity(s);
                         res = "修改成功";
-                        data = "1";
+                        data = DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss");
                     }
 
                 
@@ -917,7 +938,7 @@ namespace worklogService.Controllers
                 res = "出错";
                 data = "1";
             }
-
+            data = "1";
 
 
             var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
@@ -929,6 +950,107 @@ namespace worklogService.Controllers
              
         
         }
+
+        public class RiChengData
+        {
+            public RiChengData()
+            {
+
+                Sharelist = new List<PersonInfo>();
+            
+            
+            }
+
+            public string Uid { get; set; }
+
+            public string Content { get; set; } //: content,
+            public string Title { get; set; }//: title,
+            public string Dotime { get; set; }//: ddt,
+            public bool Isre { get; set; } //: isc,
+            public string Retime { get; set; }//: rdt,
+            public List<PersonInfo> Sharelist { get; set; }//: sharePersonlist//sharePersonlist
+        }
+
+        public class jd
+        {
+
+            public string jsondata { get; set; }
+        
+        }
+
+        public HttpResponseMessage addRicheng([FromBody]jd jdata)
+        {
+
+            BaseService baseService = new BaseService();
+
+
+
+            string res = "";
+
+            string json = jdata.jsondata;
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            RiChengData list = js.Deserialize<RiChengData>(json);
+
+            try
+            {
+
+                WkTUser ww = new WkTUser();
+                ww = (WkTUser)baseService.loadEntity(ww, long.Parse(list.Uid));
+
+                List<WkTUser> sharedUser = new List<WkTUser>();
+
+                foreach (PersonInfo p in list.Sharelist)
+                {
+
+                    WkTUser w = new WkTUser();
+                    w = (WkTUser)baseService.loadEntity(w, long.Parse(p.Id));
+
+                    sharedUser.Add(w);
+                }
+
+                StaffSchedule staffSchedule = new StaffSchedule();
+                staffSchedule.IfRemind = list.Isre ? (int)StaffSchedule.IfRemindEnum.Renmind : (int)StaffSchedule.IfRemindEnum.NotRemind;
+                //会议时间
+                staffSchedule.ScheduleTime = (DateTime.Parse(list.Dotime)).Ticks; //this.dateTimePicker2.Value.Ticks;//scheduleDate.Date.Ticks + dateTimePicker1.Value.TimeOfDay.Ticks;
+                //提醒时间
+                staffSchedule.RemindTime = (DateTime.Parse(list.Retime)).Ticks;//this.dateTimePicker1.Value.Ticks;//scheduleDate.Date.Ticks + dateTimePicker2.Value.TimeOfDay.Ticks;
+                staffSchedule.Staff = ww;
+                staffSchedule.StaffScheduleStaffs = sharedUser;
+                staffSchedule.Subject = list.Title;
+                staffSchedule.TimeStamp = DateTime.Now.Ticks;
+                staffSchedule.State = (int)IEntity.stateEnum.Normal;
+                staffSchedule.Content = list.Content;
+                staffSchedule.ArrangeMan = ww;//user;
+
+                baseService.SaveOrUpdateEntity(staffSchedule);
+
+                res = "成功";
+                string data = "1"; //JsonTools.ObjectToJson(list); //jdata.jsondata;//ss.Content;//JsonTools.ObjectToJson(ss);
+                var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+                var result = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+                };
+                return result;
+
+            }
+            catch(Exception ex)
+            {
+                res = ex.Message;
+                string data = "1"; //JsonTools.ObjectToJson(list); //jdata.jsondata;//ss.Content;//JsonTools.ObjectToJson(ss);
+                var jsonStr = "{\"Message\":" + "\"" + res + "\"" + "," + "\"data\":" + data + "}";
+                var result = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(jsonStr, Encoding.UTF8, "text/json")
+                };
+                return result;
+            
+            }
+           
+        }
+
+
+
 
         public HttpResponseMessage RiChengYo(string userid,string seeid,string rctime)
         {

@@ -82,8 +82,8 @@ namespace worklogService.Models
 
         public enum IfRemindEnum
         {
-            Renmind = 0,
-            NotRemind = 1
+            Renmind = 1,
+            NotRemind = 0
         }
 
         #endregion
